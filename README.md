@@ -3,10 +3,10 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
 [![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
-[![MCP](https://img.shields.io/badge/MCP-Cursor-blue?style=for-the-badge)](https://cursor.sh/)
-[![Windsurf](https://img.shields.io/badge/Windsurf-Cascade-purple?style=for-the-badge)](https://www.codeium.com/cascade)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://hub.docker.com/r/quegenx/vercel-mcp-server)
+[![MCP](https://img.shields.io/badge/MCP-HTTP%20Transport-blue?style=for-the-badge)](https://cursor.sh/)
 
-> 🔥 A powerful Model Context Protocol (MCP) server that provides full administrative control over your Vercel deployments through both Cursor's Composer and Codeium's Cascade. This tool enables seamless project management with comprehensive features for deployments, domains, environment variables, and more.
+> 🔥 A powerful Model Context Protocol (MCP) server that provides full administrative control over your Vercel deployments through HTTP transport. Painlessly easy to deploy with Docker! This tool enables seamless project management with comprehensive features for deployments, domains, environment variables, and more.
 
 <div align="center">
   <img src="https://assets.vercel.com/image/upload/v1588805858/repositories/vercel/logo.png" alt="Vercel" width="600"/>
@@ -35,14 +35,27 @@
 
 ## 🚀 Quick Start
 
-### 📥 Installation
+### 🐳 Docker (Recommended - Super Easy!)
+
+```bash
+# One command deployment!
+docker run -d \
+  -p 3000:3000 \
+  -e VERCEL_ACCESS_TOKEN=your_vercel_token_here \
+  --name vercel-mcp-server \
+  quegenx/vercel-mcp-server:latest
+
+# Server will be available at: http://localhost:3000
+```
+
+### 📥 Manual Installation
 
 ```bash
 # Clone the repository
 git clone https://github.com/Quegenx/vercel-mcp-server.git
 cd vercel-mcp-server
 
-# Install dependencies
+# Install dependencies  
 npm install
 
 # Build the project
@@ -51,73 +64,61 @@ npm run build
 
 ### ⚙️ Configuration
 
-1. Install dependencies and build the project:
+#### 🐳 Docker Configuration
+
+1. **Environment Variables**: The Docker container accepts these environment variables:
    ```bash
-   npm install
-   npm run build
+   VERCEL_ACCESS_TOKEN=your_vercel_token    # Required
+   VERCEL_TEAM_ID=your_team_id             # Optional
+   PORT=3000                               # Optional (default: 3000)
+   NODE_ENV=production                     # Optional
    ```
 
-2. Set up your Vercel access token:
-   - Go to https://vercel.com/account/tokens to generate your access token
-   - Update the token in both of these files:
-     
-     In `src/config/constants.ts`:
-     ```typescript
-     export const DEFAULT_ACCESS_TOKEN = "YOUR_ACCESS_TOKEN"; // Replace with your actual token
-     ```
-     
-     In `src/index.ts`:
-     ```typescript
-     export const DEFAULT_ACCESS_TOKEN = "YOUR_ACCESS_TOKEN"; // Replace with your actual token
-     ```
+2. **Get your Vercel Access Token**:
+   - Go to https://vercel.com/account/tokens 
+   - Create a new token with appropriate permissions
+   - Use it in your Docker run command or docker-compose.yml
 
-3. In Cursor's MCP settings, add the server with this command:
-
-   For macOS:
-   ```bash
-   # Default installation
-   /usr/local/bin/node /path/to/vercel-mcp/dist/index.js
-   
-   # Homebrew installation
-   /opt/homebrew/bin/node /path/to/vercel-mcp/dist/index.js
-   
-   # NVM installation
-   ~/.nvm/versions/node/v18.x.x/bin/node /path/to/vercel-mcp/dist/index.js
+3. **Docker Compose (Recommended)**:
+   ```yaml
+   services:
+     vercel-mcp:
+       image: quegenx/vercel-mcp-server:latest
+       ports:
+         - "3000:3000"
+       environment:
+         - VERCEL_ACCESS_TOKEN=your_token_here
+         - NODE_ENV=production
+       restart: unless-stopped
    ```
 
-   For Windows:
+#### 🖥️ IDE Integration
+
+**For Cursor IDE or Codeium Cascade:**
+- Server URL: `http://localhost:3000/mcp`
+- Transport: Streamable HTTP 
+- No additional configuration needed!
+
+#### 🛠️ Manual Installation Configuration
+
+1. Install dependencies and build:
    ```bash
-   # Default installation
-   C:\Program Files\nodejs\node.exe C:\path\to\vercel-mcp\dist\index.js
-   
-   # NVM for Windows
-   C:\nvm4w\nodejs\node.exe C:\path\to\vercel-mcp\dist\index.js
-   
-   # Scoop installation
-   C:\Users\username\scoop\apps\nodejs\current\node.exe C:\path\to\vercel-mcp\dist\index.js
+   npm install && npm run build
    ```
 
-   For Linux:
+2. Set environment variables:
    ```bash
-   # Default installation
-   /usr/bin/node /path/to/vercel-mcp/dist/index.js
-   
-   # NVM installation
-   ~/.nvm/versions/node/v18.x.x/bin/node /path/to/vercel-mcp/dist/index.js
+   export VERCEL_ACCESS_TOKEN=your_token_here
+   export PORT=3000
    ```
 
-   Replace `/path/to/vercel-mcp` or `C:\path\to\vercel-mcp` with your actual installation path.
-
-   To find your Node.js path:
+3. Start the server:
    ```bash
-   # macOS/Linux
-   which node
-
-   # Windows
-   where node
+   npm start
+   # Server runs on http://localhost:3000
    ```
 
-Note: Keep your Vercel access token secure and never commit it to version control.
+**Security Note**: Keep your Vercel access token secure and never commit it to version control.
 
 ## 🎯 Features
 
@@ -181,13 +182,45 @@ Note: Keep your Vercel access token secure and never commit it to version contro
 
 ## 💡 Usage
 
-Once configured, the MCP server provides all Vercel management tools through Cursor's Composer. Simply describe what you want to do with your Vercel projects, and the AI will use the appropriate commands.
+### 🐳 Docker Usage Examples
+
+```bash
+# Quick start
+docker run -d -p 3000:3000 -e VERCEL_ACCESS_TOKEN=your_token quegenx/vercel-mcp-server:latest
+
+# With custom port  
+docker run -d -p 8080:8080 -e PORT=8080 -e VERCEL_ACCESS_TOKEN=your_token quegenx/vercel-mcp-server:latest
+
+# With docker-compose
+docker-compose up -d
+
+# Health check
+curl http://localhost:3000/health
+```
+
+### 🖥️ IDE Integration
+
+Once the server is running, configure your IDE:
+
+**Cursor IDE:**
+- Go to Settings → MCP
+- Add new server: `http://localhost:3000/mcp`
+- Transport: Streamable HTTP
+
+**Codeium Cascade:**
+- Add MCP server endpoint: `http://localhost:3000/mcp`
+- Select Streamable HTTP transport
+
+### 🚀 AI Commands
+
+Once configured, the MCP server provides all Vercel management tools through your AI assistant. Simply describe what you want to do:
 
 Examples:
-- 📋 "List all my projects"
-- 🚀 "Create a new Next.js project"
+- 📋 "List all my Vercel projects"
+- 🚀 "Create a new Next.js project and deploy it"
 - 🌐 "Add a custom domain to my project"
-- 🔑 "Set up environment variables"
+- 🔑 "Set up environment variables for production"
+- 📊 "Show me deployment statistics"
 
 ## 🔒 Security Notes
 

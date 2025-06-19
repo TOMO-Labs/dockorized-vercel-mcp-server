@@ -1,0 +1,37 @@
+services:
+  vercel-mcp:
+    build: .
+    container_name: vercel-mcp-server
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      # Add your Vercel access token here or via .env file
+      - VERCEL_ACCESS_TOKEN=${VERCEL_ACCESS_TOKEN}
+    ports:
+      - "3000:3000"
+    volumes:
+      # Mount config if needed
+      - ./config:/app/config:ro
+    restart: unless-stopped
+    
+    # Resource limits for production
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+
+  # Optional: Add a simple web interface for monitoring
+  # Uncomment if you want to add a monitoring dashboard
+  # monitor:
+  #   image: nginx:alpine
+  #   container_name: vercel-mcp-monitor
+  #   ports:
+  #     - "8080:80"
+  #   volumes:
+  #     - ./monitoring:/usr/share/nginx/html:ro
+  #   depends_on:
+  #     - vercel-mcp
