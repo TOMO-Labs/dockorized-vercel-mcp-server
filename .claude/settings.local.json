@@ -1,7 +1,18 @@
 {
   "permissions": {
     "allow": [
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(npm run build:*)",
+      "Bash(docker build:*)",
+      "Bash(docker run:*)",
+      "Bash(curl:*)",
+      "Bash(docker stop:*)",
+      "Bash(docker rm:*)",
+      "Bash(npx tsc:*)",
+      "Bash(git fetch:*)",
+      "Bash(git pull:*)",
+      "Bash(pnpm run:*)",
+      "Bash(git add:*)"
     ],
     "deny": []
   }
